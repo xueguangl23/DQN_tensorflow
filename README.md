@@ -8,7 +8,11 @@ This is tensorflow implementation of 'Playing Atari with Deep Reinforcement Lear
 
 This is renewal of (https://github.com/mrkulk/deepQN_tensorflow)
 
-I used mrkulk's emulator interface and replay memory code and I made networks and main module.
+I used mrkulk's emulator interface and replay memory code and I made networks and main module
+
+It needs 1~3 days to training.
+
+I'm working on multiprocessing version for fast training.
 
 ###2. Usage
 
