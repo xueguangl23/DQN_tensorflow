@@ -33,6 +33,10 @@ I used mrkulk's emulator interface and replay memory code and I made networks an
 - opencv2
 - Arcade Learning Environment ( https://github.com/mgbellemare/Arcade-Learning-Environment )
 
-###5. Changelog
+###5. Video
+
+https://www.youtube.com/watch?v=GACcbfUaHwc
+
+###6. Changelog
 
 -2016.03.17 : First upload!
