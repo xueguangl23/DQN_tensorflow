@@ -14,6 +14,11 @@ It needs 1~3 days to training.
 
 I'm working on multiprocessing version for fast training.
 
+You can also check A3C and batch-A3C implementations
+
+A3C : https://github.com/gliese581gg/A3C_tensorflow
+Batch-A3C : https://github.com/gliese581gg/batch-A3C_tensorflow
+
 ###2. Usage
 
     python main_multithread.py (args)
