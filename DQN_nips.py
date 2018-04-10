@@ -9,7 +9,7 @@ class DQN:
 		self.network_name = name
 		self.x = tf.placeholder('float32',[None,84,84,4],name=self.network_name + '_x')
 		self.q_t = tf.placeholder('float32',[None],name=self.network_name + '_q_t')
-        	self.actions = tf.placeholder("float32", [None, params['num_act']],name=self.network_name + '_actions')
+		self.actions = tf.placeholder("float32", [None, params['num_act']],name=self.network_name + '_actions')
 		self.rewards = tf.placeholder("float32", [None],name=self.network_name + '_rewards')
 		self.terminals = tf.placeholder("float32", [None],name=self.network_name + '_terminals')
 
@@ -19,7 +19,7 @@ class DQN:
 		self.b1 = tf.Variable(tf.constant(0.1, shape=[filters]),name=self.network_name + '_'+layer_name+'_biases')
 		self.c1 = tf.nn.conv2d(self.x, self.w1, strides=[1, stride, stride, 1], padding='VALID',name=self.network_name + '_'+layer_name+'_convs')
 		self.o1 = tf.nn.relu(tf.add(self.c1,self.b1),name=self.network_name + '_'+layer_name+'_activations')
- 		#self.n1 = tf.nn.lrn(self.o1, 4, bias=1.0, alpha=0.001 / 9.0, beta=0.75)
+		#self.n1 = tf.nn.lrn(self.o1, 4, bias=1.0, alpha=0.001 / 9.0, beta=0.75)
 
 		#conv2
 		layer_name = 'conv2' ; size = 4 ; channels = 16 ; filters = 32 ; stride = 2
@@ -50,15 +50,15 @@ class DQN:
 		self.b5 = tf.Variable(tf.constant(1.0))
 		#Q,Cost,Optimizer
 		self.discount = tf.constant(self.params['discount'])
-		self.yj = tf.add(self.rewards, tf.mul(1.0-self.terminals, tf.mul(self.discount, self.q_t)))
-		self.Qxa = tf.mul(self.y,self.actions)
+		self.yj = tf.add(self.rewards, tf.multiply(1.0-self.terminals, tf.multiply(self.discount, self.q_t)))
+		self.Qxa = tf.multiply(self.y,self.actions)
 		self.Q_pred = tf.reduce_max(self.Qxa, reduction_indices=1)
 		#self.yjr = tf.reshape(self.yj,(-1,1))
 		#self.yjtile = tf.concat(1,[self.yjr,self.yjr,self.yjr,self.yjr])
-		#self.yjax = tf.mul(self.yjtile,self.actions)
+		#self.yjax = tf.multiply(self.yjtile,self.actions)
 
 		#half = tf.constant(0.5)
-		self.diff = tf.sub(self.yj, self.Q_pred)
+		self.diff = tf.subtract(self.yj, self.Q_pred)
 		
 		if self.params['clip_delta'] > 0 :
 			self.quadratic_part = tf.minimum(tf.abs(self.diff), tf.constant(self.params['clip_delta']))
@@ -67,7 +67,7 @@ class DQN:
 
 			
 		else:
-			self.diff_square = tf.mul(tf.constant(0.5),tf.pow(self.diff, 2))
+			self.diff_square = tf.multiply(tf.constant(0.5),tf.pow(self.diff, 2))
 
 		if self.params['batch_accumulator'] == 'sum':
 			self.cost = tf.reduce_sum(self.diff_square)

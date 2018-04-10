@@ -1,18 +1,18 @@
 import numpy as np
 import copy
 import sys
-from ale_python_interface import ALEInterface
+import gym
 import cv2
 import time
 #import scipy.misc
 
 class emulator:
-	def __init__(self, rom_name, vis,windowname='preview'):
-		self.ale = ALEInterface()
+	def __init__(self, rom_name, vis,windowname='show_game'):
+		self.ale = gym.make('BreakoutDeterministic-v0').env.ale
 		self.max_frames_per_episode = self.ale.getInt("max_num_frames_per_episode");
 		self.ale.setInt("random_seed",123)
 		self.ale.setInt("frame_skip",4)
-		self.ale.loadROM('roms/' + rom_name )
+		# self.ale.loadROM('roms/' + rom_name )
 		self.legal_actions = self.ale.getMinimalActionSet()
 		self.action_map = dict()
 		self.windowname = windowname
@@ -42,7 +42,7 @@ class emulator:
 		nextstate = self.get_image()
 		# scipy.misc.imsave('test.png',nextstate)
 		if self.vis:
-			cv2.imshow(self.windowname,nextstate)
+			cv2.imshow(self.windowname, nextstate)
 		return nextstate, reward, self.ale.game_over()
 
 

@@ -3,11 +3,9 @@ from emulator import *
 import tensorflow as tf
 import numpy as np
 import time
-from ale_python_interface import ALEInterface
 import cv2
 from scipy import misc
 import gc #garbage colloector
-import thread
 
 gc.enable()
 
@@ -47,7 +45,7 @@ params = {
 
 class deep_atari:
 	def __init__(self,params):
-		print 'Initializing Module...'
+		print('Initializing Module...')
 		self.params = params
 
 		self.gpu_config = tf.ConfigProto(gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=self.params['gpu_fraction']))
@@ -60,10 +58,10 @@ class deep_atari:
 		self.training = True
 
 	def build_net(self):
-		print 'Building QNet and targetnet...'		
+		print('Building QNet and targetnet...')		
 		self.qnet = DQN(self.params,'qnet')
 		self.targetnet = DQN(self.params,'targetnet')
-		self.sess.run(tf.initialize_all_variables())
+		self.sess.run(tf.global_variables_initializer())
 		saver_dict = {'qw1':self.qnet.w1,'qb1':self.qnet.b1,
 				'qw2':self.qnet.w2,'qb2':self.qnet.b2,
 				'qw3':self.qnet.w3,'qb3':self.qnet.b3,
@@ -87,13 +85,13 @@ class deep_atari:
 		self.sess.run(self.cp_ops)
 		
 		if self.params['ckpt_file'] is not None:
-			print 'loading checkpoint : ' + self.params['ckpt_file']
+			print('loading checkpoint : ' + self.params['ckpt_file'])
 			self.saver.restore(self.sess,self.params['ckpt_file'])
 			temp_train_cnt = self.sess.run(self.qnet.global_step)
 			temp_step = temp_train_cnt * self.params['learning_interval']
-			print 'Continue from'
-			print '        -> Steps : ' + str(temp_step)
-			print '        -> Minibatch update : ' + str(temp_train_cnt)
+			print('Continue from')
+			print('        -> Steps : ' + str(temp_step))
+			print('        -> Minibatch update : ' + str(temp_train_cnt))
 			
 
 	def start(self):
@@ -122,9 +120,9 @@ class deep_atari:
 				self.log_eval.write('step,epoch,train_cnt,avg_reward,avg_q,epsilon,time\n')
 
 		self.s = time.time()
-		print self.params
-		print 'Start training!'
-		print 'Collecting replay memory for ' + str(self.params['train_start']) + ' steps'
+		print(self.params)
+		print('Start training!')
+		print('Collecting replay memory for ' + str(self.params['train_start']) + ' steps')
 
 		while self.step < (self.params['steps_per_epoch'] * self.params['num_epochs'] * self.params['learning_interval'] + self.params['train_start']):	
 			if self.training : 
@@ -134,7 +132,7 @@ class deep_atari:
 				self.DB.insert(self.state_gray_old[26:110,:],self.reward_scaled,self.action_idx,self.terminal)
 
 			if self.training and self.params['copy_freq'] > 0 and self.step % self.params['copy_freq'] == 0 and self.DB.get_size() > self.params['train_start']:
-				print '&&& Copying Qnet to targetnet\n'
+				print('&&& Copying Qnet to targetnet\n')
 				self.sess.run(self.cp_ops)
 
 
@@ -290,12 +288,12 @@ class deep_atari:
 		actions_onehot = np.zeros((self.params['batch'], self.params['num_act']))
 		
 		for i in range(self.params['batch']):
-			actions_onehot[i,actions[i]] = 1
+			actions_onehot[i,int(actions[i])] = 1
 		return actions_onehot
 
 
 if __name__ == "__main__":
-	dict_items = params.items()
+	dict_items = list(params.items())
 	for i in range(1,len(sys.argv),2):
 		if sys.argv[i] == '-weight' :params['ckpt_file'] = sys.argv[i+1]
 		elif sys.argv[i] == '-network_type' :params['network_type'] = sys.argv[i+1]
@@ -303,19 +301,19 @@ if __name__ == "__main__":
 			if sys.argv[i+1] == 'y' : params['visualize'] = True
 			elif sys.argv[i+1] == 'n' : params['visualize'] = False
 			else:
-				print 'Invalid visualization argument!!! Available arguments are'
-				print '        y or n'
+				print('Invalid visualization argument!!! Available arguments are')
+				print('        y or n')
 				raise ValueError()
 		elif sys.argv[i] == '-gpu_fraction' : params['gpu_fraction'] = float(sys.argv[i+1])
 		elif sys.argv[i] == '-db_size' : params['db_size'] = int(sys.argv[i+1])
 		elif sys.argv[i] == '-only_eval' : params['only_eval'] = sys.argv[i+1]
 		else : 
-			print 'Invalid arguments!!! Available arguments are'
-			print '        -weight (filename)'
-			print '        -network_type (nips or nature)'
-			print '        -visualize (y or n)'
-			print '        -gpu_fraction (0.1~0.9)'
-			print '        -db_size (integer)'
+			print('Invalid arguments!!! Available arguments are')
+			print('        -weight (filename)')
+			print('        -network_type (nips or nature)')
+			print('        -visualize (y or n)')
+			print('        -gpu_fraction (0.1~0.9)')
+			print('        -db_size (integer)')
 			raise ValueError()
 	if params['network_type'] == 'nips':
 		from DQN_nips import *
@@ -339,15 +337,15 @@ if __name__ == "__main__":
 		params['num_epochs'] = 250
 		params['batch'] = 32
 	else :
-		print 'Invalid network type! Available network types are'
-		print '        nips or nature'
+		print('Invalid network type! Available network types are')
+		print('        nips or nature')
 		raise ValueError()
 
 	if params['only_eval'] == 'y' : only_eval = True
 	elif params['only_eval'] == 'n' : only_eval = False
 	else :
-		print 'Invalid only_eval option! Available options are'
-		print '        y or n'
+		print('Invalid only_eval option! Available options are')
+		print('        y or n')
 		raise ValueError()
 
 	if only_eval:
